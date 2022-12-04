@@ -92,4 +92,4 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-server.listen(9000, () => console.log('server running'));
+server.listen(process.env.PORT || 9000, () => console.log('server running'));
