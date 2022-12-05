@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const socketioJwt = require('socketio-jwt');
 require('dotenv').config();
@@ -45,6 +46,7 @@ app.use(express.json({
     req.rawBody = buf.toString('utf8');
   },
 }));
+app.use(cors({ credentials: true, origin: '*' }));
 
 app.post('/api/signup', async (req, res) => {
   try {
