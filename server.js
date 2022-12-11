@@ -147,38 +147,38 @@ app.get('/api/water-level', async (req, res) => {
 app.get('/api/sensors', async (req, res) => {
   try {
     const { filter } = req.query;
-    let sensor;
+    let sensors;
     switch (filter) {
       case 'thirty_mins':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 30 * 60 * 1000) } }).sort('-createdAt').limit(100);
-        console.log(sensor.length);
+        sensors= await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 30 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        console.log(sensors.length);
         break;
 
       case 'sixty_mins':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
         break;
 
       case 'ninety_mins':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 90 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 90 * 60 * 1000) } }).sort('-createdAt').limit(100);
         break;
 
       case 'two_hours':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 2 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 2 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
         break;
 
       case 'three_hours':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 3 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 3 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
         break;
 
       case 'six_hours':
-        sensor = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 6 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 6 * 60 * 60 * 1000) } }).sort('-createdAt').limit(100);
         break;
 
       default:
-        sensor = await Sensor.find().sort('-createdAt').limit(100);
+        sensors = await Sensor.find().sort('-createdAt').limit(100);
         break;
     }
-    return res.status(200).json({ sensor });
+    return res.status(200).json({ sensors });
   } catch (err) {
     console.log({ err });
   }
@@ -227,6 +227,7 @@ app.get('/api/sensors', async (req, res) => {
 
       if (total > 1000) {
         await Sensor.deleteMany({ _id: { $in: sensors.map((s) => s._id) } });
+        console.log('deleted', sensors.length, 'sensors');
       }
 
       totalSensors = total;
