@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const waterLevelSchema = new mongoose.Schema({
   waterLevel: {
-    type: String,
+    type: Number,
     required: true,
   },
 }, { timestamps: true });
