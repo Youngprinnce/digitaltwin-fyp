@@ -45,19 +45,19 @@ io.on('connection', async (socket) => {
         ultrasonic,
       });
 
-      sensor.save()
-        .then((result) => {
-          // console.log(result);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      socket.emit('sensor', {
-        ph,
-        temp,
-        turbidity,
-        ultrasonic,
-      });
+      // sensor.save()
+      //   .then((result) => {
+      //     // console.log(result);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+      // socket.emit('sensor', {
+      //   ph,
+      //   temp,
+      //   turbidity,
+      //   ultrasonic,
+      // });
     }, interval);
   }
 });
