@@ -38,20 +38,20 @@ io.on('connection', async (socket) => {
       const turbidity = (Math.floor(Math.random() * (100 - 10) + 10));
       const ultrasonic = (Math.floor(Math.random() * (500 - 30) + 30));
 
-      // const sensor = new Sensor({
-      //   ph,
-      //   temp,
-      //   turbidity,
-      //   ultrasonic,
-      // });
+      const sensor = new Sensor({
+        ph,
+        temp,
+        turbidity,
+        ultrasonic,
+      });
 
-      // sensor.save()
-      //   .then((result) => {
-      //     // console.log(result);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      sensor.save()
+        .then((result) => {
+          // console.log(result);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       socket.emit('sensor', {
         ph,
         temp,
