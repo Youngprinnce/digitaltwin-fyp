@@ -30,7 +30,7 @@ io.on('connection', async (socket) => {
   const { username } = socket.decoded_token;
   const valid = await User.findOne({ username });
   if (valid) {
-    const interval = 6000;
+    const interval = 5000;
 
     setInterval(() => {
       const ph = (Math.floor(Math.random() * 14) + 1);
