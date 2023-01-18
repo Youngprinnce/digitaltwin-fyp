@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 /* eslint-disable camelcase */
@@ -26,11 +27,21 @@ io.use(socketioJwt.authorize({
   auth_header_required: true,
 }));
 
+function formatTime(myDate) {
+  const date = new Date(myDate);
+  const formattedTime = date.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
+  return formattedTime;
+}
+
 io.on('connection', async (socket) => {
   const { username } = socket.decoded_token;
   const valid = await User.findOne({ username });
   if (valid) {
-    const interval = 5000;
+    const interval = 30000;
 
     setInterval(() => {
       const ph = (Math.floor(Math.random() * 14) + 1);
@@ -47,7 +58,7 @@ io.on('connection', async (socket) => {
 
       // sensor.save()
       //   .then((result) => {
-      //     // console.log(result);
+      //     console.log(result);
       //   })
       //   .catch((err) => {
       //     console.log(err);
@@ -59,6 +70,22 @@ io.on('connection', async (socket) => {
         ultrasonic,
       });
     }, interval);
+
+    setInterval(async () => {
+      const sensors = await Sensor.find({ }).sort('-createdAt').limit(12);
+
+      // map through the sensors and return the values and format the date to a readable time format
+      const graphData = sensors.map((sensor) => ({
+        ph: sensor.ph,
+        temp: sensor.temp,
+        turbidity: sensor.turbidity,
+        ultrasonic: sensor.ultrasonic,
+        time: formatTime(sensor.createdAt),
+      }));
+      socket.emit('graph', {
+        ...graphData,
+      });
+    }, 120000);
   }
 });
 
@@ -150,7 +177,7 @@ app.get('/api/sensors', async (req, res) => {
     let sensors;
     switch (filter) {
       case 'thirty_mins':
-        sensors= await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 30 * 60 * 1000) } }).sort('-createdAt').limit(100);
+        sensors = await Sensor.find({ createdAt: { $gte: new Date(new Date().getTime() - 30 * 60 * 1000) } }).sort('-createdAt').limit(100);
         console.log(sensors.length);
         break;
 
@@ -184,30 +211,6 @@ app.get('/api/sensors', async (req, res) => {
   }
 });
 
-// app.post('/api/sensor', async (req, res) => {
-//   try {
-//     // eslint-disable-next-line prefer-const
-//     const {
-//       ph, temp, turbidity, ultrasonic,
-//     } = req.body;
-//     console.log({
-//       ph, temp, turbidity, ultrasonic,
-//     });
-
-//     if (!ph || !temp || !turbidity || !ultrasonic) {
-//       return res.status(400).json({ message: 'provide all sensor values' });
-//     }
-
-//     await Sensor.create({
-//       ph, temp, turbidity, ultrasonic,
-//     });
-
-//     return res.status(200).json({ message: 'Sensor values saved sussceefully' });
-//   } catch (err) {
-//     console.log({ err });
-//   }
-// });
-
 (async () => {
   const job = new CronJob('0 0 * * *', async () => {
     let currentPage = 0;
@@ -226,6 +229,7 @@ app.get('/api/sensors', async (req, res) => {
       const total = await Sensor.countDocuments();
 
       if (total > 1000) {
+        // eslint-disable-next-line no-underscore-dangle
         await Sensor.deleteMany({ _id: { $in: sensors.map((s) => s._id) } });
         console.log('deleted', sensors.length, 'sensors');
       }
